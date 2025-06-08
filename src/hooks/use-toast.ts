@@ -1,4 +1,3 @@
-
 import * as React from "react"
 
 type ToastActionElement = React.ReactElement
@@ -15,7 +14,11 @@ const TOAST_REMOVE_DELAY = 1000000
 
 type ToasterToast = ToastProps & {
   id: string
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
+
+// ... keep existing code (actionTypes, count, genId function, Action type, State interface, toastTimeouts, addToRemoveQueue function)
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
