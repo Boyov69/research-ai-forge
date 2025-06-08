@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Brain, Eye, Zap, Phoenix } from 'lucide-react';
+import { Search, Brain, Eye, Zap, Flame } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
 interface ResearchInterfaceProps {
@@ -21,7 +20,7 @@ const AI_AGENTS = [
   { id: 'crow', name: 'Crow', icon: Brain, description: 'Literature synthesis' },
   { id: 'falcon', name: 'Falcon', icon: Eye, description: 'Data analysis' },
   { id: 'owl', name: 'Owl', icon: Search, description: 'Deep research' },
-  { id: 'phoenix', name: 'Phoenix', icon: Phoenix, description: 'Innovation discovery' }
+  { id: 'phoenix', name: 'Phoenix', icon: Flame, description: 'Innovation discovery' }
 ];
 
 export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInterfaceProps) => {
