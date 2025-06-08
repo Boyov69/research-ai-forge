@@ -1,11 +1,30 @@
 
-export const LoadingSpinner = () => {
+import { cn } from "@/lib/utils"
+
+interface LoadingSpinnerProps {
+  className?: string
+  size?: "sm" | "md" | "lg"
+}
+
+export const LoadingSpinner = ({ className, size = "md" }: LoadingSpinnerProps) => {
+  const sizeClasses = {
+    sm: "h-4 w-4",
+    md: "h-6 w-6", 
+    lg: "h-8 w-8"
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
-      <div className="relative">
-        <div className="w-12 h-12 border-4 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
-        <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-t-cyan-400 rounded-full animate-spin animate-reverse"></div>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <div className="text-center">
+        <div
+          className={cn(
+            "animate-spin rounded-full border-2 border-blue-200 border-t-blue-500 mx-auto mb-4",
+            sizeClasses[size],
+            className
+          )}
+        />
+        <p className="text-blue-200">Loading...</p>
       </div>
     </div>
-  );
-};
+  )
+}

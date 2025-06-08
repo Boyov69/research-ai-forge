@@ -1,62 +1,23 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Brain, LogOut, Search, BookOpen, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { DashboardHeader } from './dashboard/DashboardHeader';
-import { ResearchInterface } from './dashboard/ResearchInterface';
-import { RecentQueries } from './dashboard/RecentQueries';
-import { SubscriptionCard } from './dashboard/SubscriptionCard';
-import { WorkspaceList } from './dashboard/WorkspaceList';
-import type { Tables } from '@/integrations/supabase/types';
-
-type Profile = Tables<'profiles'>;
-type Subscription = Tables<'subscriptions'>;
-type ResearchQuery = Tables<'research_queries'>;
 
 export const Dashboard = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [recentQueries, setRecentQueries] = useState<ResearchQuery[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  const fetchUserData = async () => {
+  const handleSignOut = async () => {
+    setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Fetch profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      // Fetch subscription
-      const { data: subscriptionData } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      // Fetch recent queries
-      const { data: queriesData } = await supabase
-        .from('research_queries')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      setProfile(profileData);
-      setSubscription(subscriptionData);
-      setRecentQueries(queriesData || []);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
     } catch (error: any) {
       toast({
-        title: "Error loading data",
+        title: "Sign Out Error",
         description: error.message,
         variant: "destructive",
       });
@@ -65,31 +26,100 @@ export const Dashboard = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-      <DashboardHeader profile={profile} />
-      
-      <main className="container mx-auto px-4 py-8 space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <ResearchInterface subscription={subscription} onQuerySubmit={fetchUserData} />
-            <RecentQueries queries={recentQueries} />
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <Brain className="h-8 w-8 text-blue-400" />
+            <h1 className="text-3xl font-bold text-white">Scholar-AI</h1>
           </div>
-          
-          <div className="space-y-8">
-            <SubscriptionCard subscription={subscription} />
-            <WorkspaceList />
-          </div>
+          <Button
+            onClick={handleSignOut}
+            disabled={loading}
+            variant="outline"
+            className="text-white border-white/20 hover:bg-white/10"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
         </div>
-      </main>
+
+        {/* Welcome Section */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            Welcome to Scholar-AI
+          </h2>
+          <p className="text-xl text-blue-200 mb-8">
+            Your superhuman research platform powered by AI
+          </p>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <Card className="backdrop-blur-lg bg-white/10 border-white/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                AI Research
+              </CardTitle>
+              <CardDescription className="text-blue-200">
+                Conduct advanced research with AI assistance
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-white/80">
+                Use our AI agents to analyze papers, extract insights, and generate comprehensive research summaries.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="backdrop-blur-lg bg-white/10 border-white/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                Smart Citations
+              </CardTitle>
+              <CardDescription className="text-blue-200">
+                Automatic citation generation and management
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-white/80">
+                Generate properly formatted citations in multiple styles with our intelligent citation system.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="backdrop-blur-lg bg-white/10 border-white/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Collaboration
+              </CardTitle>
+              <CardDescription className="text-blue-200">
+                Work together on research projects
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-white/80">
+                Share workspaces, collaborate on queries, and build knowledge together with your team.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="text-center">
+          <Button 
+            size="lg"
+            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-3 text-lg"
+          >
+            Start New Research Query
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
