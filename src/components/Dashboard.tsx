@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,27 +10,37 @@ import { ResearchFeatures } from './dashboard/ResearchFeatures';
 import { Hero } from './dashboard/Hero';
 import { PricingSection } from './dashboard/PricingSection';
 import { ResearchInterface } from './dashboard/ResearchInterface';
-
 export const Dashboard = () => {
   const [citationOpen, setCitationOpen] = useState(false);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [analyticsOpen, setAnalyticsOpen] = useState(true);
   const [accountOpen, setAccountOpen] = useState(true);
-
-  const stats = [
-    { title: 'Research Queries', value: '1,247', icon: Search, color: 'text-blue-400' },
-    { title: 'Citations', value: '3,856', icon: Quote, color: 'text-green-400' },
-    { title: 'Collaborators', value: '28', icon: Users, color: 'text-purple-400' },
-    { title: 'Exports', value: '156', icon: Download, color: 'text-yellow-400' }
-  ];
-
+  const stats = [{
+    title: 'Research Queries',
+    value: '1,247',
+    icon: Search,
+    color: 'text-blue-400'
+  }, {
+    title: 'Citations',
+    value: '3,856',
+    icon: Quote,
+    color: 'text-green-400'
+  }, {
+    title: 'Collaborators',
+    value: '28',
+    icon: Users,
+    color: 'text-purple-400'
+  }, {
+    title: 'Exports',
+    value: '156',
+    icon: Download,
+    color: 'text-yellow-400'
+  }];
   const handleQuerySubmit = () => {
     // Handle query submission
     console.log('Query submitted');
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -66,9 +75,8 @@ export const Dashboard = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={index} className="backdrop-blur-lg bg-white/10 border-white/20">
+          const Icon = stat.icon;
+          return <Card key={index} className="backdrop-blur-lg bg-white/10 border-white/20">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -78,17 +86,13 @@ export const Dashboard = () => {
                     <Icon className={`h-8 w-8 ${stat.color}`} />
                   </div>
                 </CardContent>
-              </Card>
-            );
-          })}
+              </Card>;
+        })}
         </div>
 
         {/* AI Research Interface */}
         <div className="mb-6">
-          <ResearchInterface 
-            subscription={null} 
-            onQuerySubmit={handleQuerySubmit} 
-          />
+          <ResearchInterface subscription={null} onQuerySubmit={handleQuerySubmit} />
         </div>
 
         {/* Pricing Section */}
@@ -106,19 +110,37 @@ export const Dashboard = () => {
                     <Quote className="h-5 w-5 text-green-400" />
                     Citation Management
                   </CardTitle>
-                  {citationOpen ? (
-                    <ChevronUp className="h-5 w-5 text-blue-400" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-blue-400" />
-                  )}
+                  {citationOpen ? <ChevronUp className="h-5 w-5 text-blue-400" /> : <ChevronDown className="h-5 w-5 text-blue-400" />}
                 </div>
               </CardHeader>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CardContent>
-                <p className="text-blue-200">
-                  Manage your research citations, generate bibliographies, and organize references.
-                </p>
+                <p className="text-blue-200">Manage your researc
+Smith, J. et al. (2024)
+APA
+
+"Deep Learning Applications in Quantum Drug Discovery: A Comprehensive Review."
+
+Journal of Quantum Medicine, 15(3), 234-267. https://doi.org/10.1000/jqm.2024.15.3.234
+
+Cited 127 times
+Impact Factor: 8.2
+Copy
+Chen, L. & Wang, M. (2024)
+IEEE
+
+"Ethical Considerations in AI-Driven Pharmaceutical Research."
+
+AI Ethics Quarterly, 8(2), 45-62. https://doi.org/10.1000/aeq.2024.8.2.45
+
+Cited 93 times
+Impact Factor: 6.7
+Copy
+Export BibTeX
+Export Word
+Export LaTeX
+127 citations managedh citations, generate bibliographies, and organize references.</p>
               </CardContent>
             </CollapsibleContent>
           </Card>
@@ -134,11 +156,7 @@ export const Dashboard = () => {
                     <Users className="h-5 w-5 text-purple-400" />
                     Collaborative Workspaces
                   </CardTitle>
-                  {workspaceOpen ? (
-                    <ChevronUp className="h-5 w-5 text-blue-400" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-blue-400" />
-                  )}
+                  {workspaceOpen ? <ChevronUp className="h-5 w-5 text-blue-400" /> : <ChevronDown className="h-5 w-5 text-blue-400" />}
                 </div>
               </CardHeader>
             </CollapsibleTrigger>
@@ -162,11 +180,7 @@ export const Dashboard = () => {
                     <BarChart3 className="h-5 w-5 text-orange-400" />
                     Research Analytics
                   </CardTitle>
-                  {analyticsOpen ? (
-                    <ChevronUp className="h-5 w-5 text-blue-400" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-blue-400" />
-                  )}
+                  {analyticsOpen ? <ChevronUp className="h-5 w-5 text-blue-400" /> : <ChevronDown className="h-5 w-5 text-blue-400" />}
                 </div>
               </CardHeader>
             </CollapsibleTrigger>
@@ -188,11 +202,7 @@ export const Dashboard = () => {
                     <Settings className="h-5 w-5 text-gray-400" />
                     Account & Settings
                   </CardTitle>
-                  {accountOpen ? (
-                    <ChevronUp className="h-5 w-5 text-blue-400" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-blue-400" />
-                  )}
+                  {accountOpen ? <ChevronUp className="h-5 w-5 text-blue-400" /> : <ChevronDown className="h-5 w-5 text-blue-400" />}
                 </div>
               </CardHeader>
             </CollapsibleTrigger>
@@ -207,6 +217,5 @@ export const Dashboard = () => {
         {/* Research Features */}
         <ResearchFeatures />
       </div>
-    </div>
-  );
+    </div>;
 };
