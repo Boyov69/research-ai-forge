@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -168,12 +169,11 @@ export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInter
                 return (
                   <div
                     key={agent.id}
-                    className={`p-3 rounded-lg border transition-all cursor-pointer ${
+                    className={`p-3 rounded-lg border transition-all ${
                       selectedAgents.includes(agent.id)
                         ? 'bg-blue-500/20 border-blue-400'
                         : 'bg-white/5 border-white/20 hover:border-white/40'
                     }`}
-                    onClick={() => handleAgentToggle(agent.id)}
                   >
                     <div className="flex items-start gap-2">
                       <Checkbox
