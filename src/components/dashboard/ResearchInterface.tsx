@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Brain, Eye, Zap, Flame } from 'lucide-react';
@@ -17,10 +19,34 @@ interface ResearchInterfaceProps {
 }
 
 const AI_AGENTS = [
-  { id: 'crow', name: 'Crow', icon: Brain, description: 'Literature synthesis' },
-  { id: 'falcon', name: 'Falcon', icon: Eye, description: 'Data analysis' },
-  { id: 'owl', name: 'Owl', icon: Search, description: 'Deep research' },
-  { id: 'phoenix', name: 'Phoenix', icon: Flame, description: 'Innovation discovery' }
+  { 
+    id: 'phoenix', 
+    name: 'Phoenix', 
+    icon: Flame, 
+    description: 'Experimental Chemistry Tasks',
+    fullDescription: 'A new iteration of ChemCrow, Phoenix uses cheminformatics tools to do chemistry. Good for planning synthesis and design of new molecules.'
+  },
+  { 
+    id: 'crow', 
+    name: 'Crow', 
+    icon: Brain, 
+    description: 'Concise Search',
+    fullDescription: 'Produces a succinct answer citing scientific data sources, good for API calls and specific questions. Built with PaperQA2.'
+  },
+  { 
+    id: 'falcon', 
+    name: 'Falcon', 
+    icon: Eye, 
+    description: 'Deep Search',
+    fullDescription: 'Produces a long report with many sources, good for literature reviews and evaluating hypotheses.'
+  },
+  { 
+    id: 'owl', 
+    name: 'Owl', 
+    icon: Search, 
+    description: 'Precedent Search',
+    fullDescription: 'Formerly known as HasAnyone, good for understanding if anyone has ever done something in science.'
+  }
 ];
 
 export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInterfaceProps) => {
@@ -150,22 +176,47 @@ export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInter
                     }`}
                     onClick={() => handleAgentToggle(agent.id)}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-start gap-2">
                       <Checkbox
                         checked={selectedAgents.includes(agent.id)}
                         onChange={() => handleAgentToggle(agent.id)}
-                        className="border-white/40"
+                        className="border-white/40 mt-1"
                       />
-                      <Icon className="h-4 w-4 text-blue-400" />
+                      <Icon className="h-4 w-4 text-blue-400 mt-1 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-white font-medium">{agent.name}</p>
-                        <p className="text-xs text-blue-200">{agent.description}</p>
+                        <p className="text-xs text-blue-200 mb-1">{agent.description}</p>
+                        <p className="text-xs text-blue-300/80 leading-relaxed">{agent.fullDescription}</p>
                       </div>
                     </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Select defaultValue="gpt-4o-2024-11-20">
+              <SelectTrigger className="bg-white/10 border-white/20 text-white w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800 border-slate-600">
+                <SelectItem value="gpt-4o-2024-11-20" className="text-white hover:bg-slate-700">
+                  GPT-4o-2024-11-20
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select defaultValue="0.5">
+              <SelectTrigger className="bg-white/10 border-white/20 text-white w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800 border-slate-600">
+                <SelectItem value="0.5" className="text-white hover:bg-slate-700">
+                  Temperature: 0.5
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center justify-between">
