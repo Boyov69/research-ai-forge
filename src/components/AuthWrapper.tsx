@@ -10,6 +10,11 @@ interface AuthWrapperProps {
 }
 
 export const AuthWrapper = ({ children }: AuthWrapperProps) => {
+  // Temporarily bypass authentication - always show children
+  return <>{children}</>;
+  
+  // Original authentication logic commented out for now
+  /*
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,4 +45,5 @@ export const AuthWrapper = ({ children }: AuthWrapperProps) => {
   }
 
   return <>{children}</>;
+  */
 };
