@@ -1,21 +1,20 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Users, Plus, Lock, Globe, MoreVertical, Edit, Trash2, Share, Eye, UserPlus, Settings } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useWorkspaces } from '@/hooks/useWorkspaces';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Workspace = Tables<'workspaces'>;
 
 export const WorkspaceList = () => {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { workspaces, isLoading, createWorkspace, updateWorkspace, deleteWorkspace } = useWorkspaces();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
@@ -26,89 +25,35 @@ export const WorkspaceList = () => {
     is_public: false
   });
 
-  useEffect(() => {
-    fetchWorkspaces();
-  }, []);
-
-  const fetchWorkspaces = async () => {
-    try {
-      const { data } = await supabase
-        .from('workspaces')
-        .select('*')
-        .order('updated_at', { ascending: false })
-        .limit(5);
-
-      setWorkspaces(data || []);
-    } catch (error) {
-      console.error('Error fetching workspaces:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleCreateWorkspace = async () => {
+    if (!newWorkspace.name) return;
+    
+    await createWorkspace.mutateAsync({
+      name: newWorkspace.name,
+      description: newWorkspace.description,
+      is_public: newWorkspace.is_public,
+    });
+    
+    setCreateDialogOpen(false);
+    setNewWorkspace({ name: '', description: '', is_public: false });
   };
 
-  const createWorkspace = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('workspaces')
-        .insert([{
-          name: newWorkspace.name,
-          description: newWorkspace.description,
-          is_public: newWorkspace.is_public,
-          owner_id: 'temp-user-id' // This would be the actual user ID from auth
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setWorkspaces(prev => [data, ...prev]);
-      setCreateDialogOpen(false);
-      setNewWorkspace({ name: '', description: '', is_public: false });
-    } catch (error) {
-      console.error('Error creating workspace:', error);
-    }
-  };
-
-  const updateWorkspace = async () => {
+  const handleUpdateWorkspace = async () => {
     if (!selectedWorkspace) return;
 
-    try {
-      const { data, error } = await supabase
-        .from('workspaces')
-        .update({
-          name: selectedWorkspace.name,
-          description: selectedWorkspace.description,
-          is_public: selectedWorkspace.is_public
-        })
-        .eq('id', selectedWorkspace.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setWorkspaces(prev => 
-        prev.map(w => w.id === selectedWorkspace.id ? data : w)
-      );
-      setEditDialogOpen(false);
-      setSelectedWorkspace(null);
-    } catch (error) {
-      console.error('Error updating workspace:', error);
-    }
+    await updateWorkspace.mutateAsync({
+      id: selectedWorkspace.id,
+      name: selectedWorkspace.name,
+      description: selectedWorkspace.description,
+      is_public: selectedWorkspace.is_public
+    });
+    
+    setEditDialogOpen(false);
+    setSelectedWorkspace(null);
   };
 
-  const deleteWorkspace = async (workspaceId: string) => {
-    try {
-      const { error } = await supabase
-        .from('workspaces')
-        .delete()
-        .eq('id', workspaceId);
-
-      if (error) throw error;
-
-      setWorkspaces(prev => prev.filter(w => w.id !== workspaceId));
-    } catch (error) {
-      console.error('Error deleting workspace:', error);
-    }
+  const handleDeleteWorkspace = async (workspaceId: string) => {
+    await deleteWorkspace.mutateAsync(workspaceId);
   };
 
   const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => (
@@ -169,7 +114,7 @@ export const WorkspaceList = () => {
               Settings
             </DropdownMenuItem>
             <DropdownMenuItem 
-              onClick={() => deleteWorkspace(workspace.id)}
+              onClick={() => handleDeleteWorkspace(workspace.id)}
               className="text-red-400 hover:bg-red-500/10"
             >
               <Trash2 className="h-4 w-4 mr-2" />
@@ -189,7 +134,7 @@ export const WorkspaceList = () => {
         <span>Updated {new Date(workspace.updated_at).toLocaleDateString()}</span>
         <div className="flex items-center gap-1">
           <Users className="h-3 w-3" />
-          <span>3 members</span>
+          <span>1 member</span>
         </div>
       </div>
     </div>
@@ -208,7 +153,7 @@ export const WorkspaceList = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          {isLoading ? (
             <div className="flex justify-center py-4">
               <div className="w-6 h-6 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
             </div>
@@ -289,8 +234,11 @@ export const WorkspaceList = () => {
               <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={createWorkspace} disabled={!newWorkspace.name}>
-                Create Workspace
+              <Button 
+                onClick={handleCreateWorkspace} 
+                disabled={!newWorkspace.name || createWorkspace.isPending}
+              >
+                {createWorkspace.isPending ? 'Creating...' : 'Create Workspace'}
               </Button>
             </div>
           </div>
@@ -346,8 +294,11 @@ export const WorkspaceList = () => {
                 <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={updateWorkspace}>
-                  Update Workspace
+                <Button 
+                  onClick={handleUpdateWorkspace}
+                  disabled={updateWorkspace.isPending}
+                >
+                  {updateWorkspace.isPending ? 'Updating...' : 'Update Workspace'}
                 </Button>
               </div>
             </div>
@@ -390,33 +341,6 @@ export const WorkspaceList = () => {
                   <Button size="sm" variant="outline">
                     Copy
                   </Button>
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-white">Current Members</Label>
-                <div className="space-y-2 mt-2">
-                  <div className="flex items-center justify-between p-2 bg-white/5 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs">
-                        JD
-                      </div>
-                      <span className="text-sm">john.doe@university.edu</span>
-                      <Badge variant="outline" className="text-xs">Owner</Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-white/5 rounded">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs">
-                        AS
-                      </div>
-                      <span className="text-sm">alice.smith@research.org</span>
-                      <Badge variant="outline" className="text-xs">Editor</Badge>
-                    </div>
-                    <Button size="sm" variant="ghost">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
               </div>
 
