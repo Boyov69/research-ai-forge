@@ -271,9 +271,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_workspace: {
+        Args: { workspace_id: string; user_id: string }
+        Returns: boolean
+      }
       get_query_limit: {
         Args: { tier: Database["public"]["Enums"]["subscription_tier"] }
         Returns: number
+      }
+      is_workspace_owner: {
+        Args: { workspace_id: string; user_id: string }
+        Returns: boolean
       }
     }
     Enums: {
