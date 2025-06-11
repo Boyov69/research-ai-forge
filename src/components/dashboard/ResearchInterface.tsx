@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Brain, Eye, Zap, Flame } from 'lucide-react';
+import { Search, Brain, Eye, Zap, Flame, Bird } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
 interface ResearchInterfaceProps {
@@ -22,28 +22,28 @@ const AI_AGENTS = [
   { 
     id: 'phoenix', 
     name: 'Phoenix', 
-    icon: Flame, 
+    icon: Bird, 
     description: 'Experimental Chemistry Tasks',
     fullDescription: 'A new iteration of ChemCrow, Phoenix uses cheminformatics tools to do chemistry. Good for planning synthesis and design of new molecules.'
   },
   { 
     id: 'crow', 
     name: 'Crow', 
-    icon: Brain, 
+    icon: Bird, 
     description: 'Concise Search',
     fullDescription: 'Produces a succinct answer citing scientific data sources, good for API calls and specific questions. Built with PaperQA2.'
   },
   { 
     id: 'falcon', 
     name: 'Falcon', 
-    icon: Eye, 
+    icon: Bird, 
     description: 'Deep Search',
     fullDescription: 'Produces a long report with many sources, good for literature reviews and evaluating hypotheses.'
   },
   { 
     id: 'owl', 
     name: 'Owl', 
-    icon: Search, 
+    icon: Bird, 
     description: 'Precedent Search',
     fullDescription: 'Formerly known as HasAnyone, good for understanding if anyone has ever done something in science.'
   }
