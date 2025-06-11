@@ -14,6 +14,9 @@ import { ResearchInterface } from './dashboard/ResearchInterface';
 import { CitationManager } from './dashboard/CitationManager';
 import { WorkspaceList } from './dashboard/WorkspaceList';
 import { MainNavigation } from './navigation/MainNavigation';
+import { useProfile } from '@/hooks/useProfile';
+import { useSubscription } from '@/hooks/useSubscription';
+import { useResearchQueries } from '@/hooks/useResearchQueries';
 
 export const Dashboard = () => {
   const [citationOpen, setCitationOpen] = useState(false);
@@ -21,14 +24,18 @@ export const Dashboard = () => {
   const [analyticsOpen, setAnalyticsOpen] = useState(true);
   const [accountOpen, setAccountOpen] = useState(true);
   
+  const { profile } = useProfile();
+  const { subscription } = useSubscription();
+  const { queries } = useResearchQueries();
+  
   const stats = [{
     title: 'Research Queries',
-    value: '1,247',
+    value: queries.length.toString(),
     icon: Search,
     color: 'text-blue-400'
   }, {
     title: 'Citations',
-    value: '3,856',
+    value: queries.reduce((acc, q) => acc + (q.citations ? Array.isArray(q.citations) ? q.citations.length : 0 : 0), 0).toString(),
     icon: Quote,
     color: 'text-green-400'
   }, {
@@ -58,6 +65,18 @@ export const Dashboard = () => {
           <Hero />
         </div>
 
+        {/* Welcome Message */}
+        {profile && (
+          <div className="mb-8 p-4 bg-white/10 rounded-lg border border-white/20">
+            <h2 className="text-xl font-semibold text-white mb-2">
+              Welcome back, {profile.full_name || 'Scholar'}!
+            </h2>
+            <p className="text-blue-200">
+              {subscription ? `You're on the ${subscription.tier} plan` : 'Get started with your research'}
+            </p>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
@@ -80,7 +99,7 @@ export const Dashboard = () => {
 
         {/* AI Research Interface */}
         <div id="research" className="mb-6">
-          <ResearchInterface subscription={null} onQuerySubmit={handleQuerySubmit} />
+          <ResearchInterface subscription={subscription} onQuerySubmit={handleQuerySubmit} />
         </div>
 
         {/* Pricing Section */}
