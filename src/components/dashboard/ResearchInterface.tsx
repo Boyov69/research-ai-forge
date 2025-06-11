@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -179,7 +178,7 @@ export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInter
                     <div className="flex items-start gap-2">
                       <Checkbox
                         checked={selectedAgents.includes(agent.id)}
-                        onChange={() => handleAgentToggle(agent.id)}
+                        onCheckedChange={() => handleAgentToggle(agent.id)}
                         className="border-white/40 mt-1"
                       />
                       <Icon className="h-4 w-4 text-blue-400 mt-1 flex-shrink-0" />
