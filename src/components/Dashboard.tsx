@@ -2,20 +2,17 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Progress } from '@/components/ui/progress';
-import { Brain, Search, Users, Download, Quote, ChevronDown, ChevronUp, Play, BarChart3, Settings } from 'lucide-react';
+import { Brain, Search, Users, Download, Quote, ChevronDown, ChevronUp, BarChart3, Settings } from 'lucide-react';
 import { ResearchAnalytics } from './dashboard/ResearchAnalytics';
 import { AccountSettings } from './dashboard/AccountSettings';
 import { ResearchFeatures } from './dashboard/ResearchFeatures';
 import { Hero } from './dashboard/Hero';
 import { PricingSection } from './dashboard/PricingSection';
+import { ResearchInterface } from './dashboard/ResearchInterface';
 
 export const Dashboard = () => {
-  const [query, setQuery] = useState('What are the latest developments in quantum computing for drug discovery?');
-  const [researchProgress, setResearchProgress] = useState(73);
   const [citationOpen, setCitationOpen] = useState(false);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [analyticsOpen, setAnalyticsOpen] = useState(true);
@@ -28,12 +25,10 @@ export const Dashboard = () => {
     { title: 'Exports', value: '156', icon: Download, color: 'text-yellow-400' }
   ];
 
-  const aiAgents = [
-    { name: 'Crow Agent', description: 'Literature discovery', status: 'Active', color: 'bg-green-500' },
-    { name: 'Falcon Agent', description: 'Data analysis', status: 'Ready', color: 'bg-blue-500' },
-    { name: 'Owl Agent', description: 'Citation generation', status: 'Processing', color: 'bg-orange-500' },
-    { name: 'Phoenix Agent', description: 'Synthesis & insights', status: 'Standby', color: 'bg-gray-500' }
-  ];
+  const handleQuerySubmit = () => {
+    // Handle query submission
+    console.log('Query submitted');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -88,74 +83,13 @@ export const Dashboard = () => {
           })}
         </div>
 
-        {/* AI Research Assistant */}
-        <Card className="backdrop-blur-lg bg-white/10 border-white/20 mb-6">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-white flex items-center gap-2">
-                <Brain className="h-5 w-5 text-blue-400" />
-                AI Research Assistant
-              </CardTitle>
-              <ChevronUp className="h-5 w-5 text-blue-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {/* AI Agents Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              {aiAgents.map((agent, index) => (
-                <Card key={index} className="bg-white/5 border-white/10">
-                  <CardContent className="p-4 text-center">
-                    <div className="mb-3">
-                      <Brain className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-                      <h3 className="text-white font-medium">{agent.name}</h3>
-                      <p className="text-blue-200 text-xs">{agent.description}</p>
-                    </div>
-                    <Badge 
-                      className={`${agent.color} text-white border-0`}
-                    >
-                      {agent.status}
-                    </Badge>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Research Query Section */}
-            <div className="space-y-4">
-              <div>
-                <label className="text-white font-medium block mb-2">Research Query</label>
-                <Textarea
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-blue-200 min-h-[100px]"
-                  placeholder="Enter your research question..."
-                />
-              </div>
-
-              <div className="flex items-center gap-4">
-                <select className="bg-slate-800 border border-white/30 rounded-md px-3 py-2 text-white text-sm focus:bg-slate-700 focus:border-blue-400">
-                  <option className="bg-slate-800 text-white">GPT-4o-2024-11-20</option>
-                </select>
-                <select className="bg-slate-800 border border-white/30 rounded-md px-3 py-2 text-white text-sm focus:bg-slate-700 focus:border-blue-400">
-                  <option className="bg-slate-800 text-white">Temperature: 0.5</option>
-                </select>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white ml-auto">
-                  <Play className="h-4 w-4 mr-2" />
-                  Run Query
-                </Button>
-              </div>
-
-              {/* Research Progress */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">Research Progress</span>
-                  <span className="text-blue-200 text-sm">{researchProgress}% Complete</span>
-                </div>
-                <Progress value={researchProgress} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* AI Research Interface */}
+        <div className="mb-6">
+          <ResearchInterface 
+            subscription={null} 
+            onQuerySubmit={handleQuerySubmit} 
+          />
+        </div>
 
         {/* Pricing Section */}
         <div className="mb-12">
