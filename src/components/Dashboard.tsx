@@ -10,6 +10,8 @@ import { Brain, Search, Users, Download, Quote, ChevronDown, ChevronUp, Play, Ba
 import { ResearchAnalytics } from './dashboard/ResearchAnalytics';
 import { AccountSettings } from './dashboard/AccountSettings';
 import { ResearchFeatures } from './dashboard/ResearchFeatures';
+import { Hero } from './dashboard/Hero';
+import { PricingSection } from './dashboard/PricingSection';
 
 export const Dashboard = () => {
   const [query, setQuery] = useState('What are the latest developments in quantum computing for drug discovery?');
@@ -59,6 +61,11 @@ export const Dashboard = () => {
               Get Started
             </Button>
           </div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="mb-12">
+          <Hero />
         </div>
 
         {/* Stats Cards */}
@@ -126,11 +133,11 @@ export const Dashboard = () => {
               </div>
 
               <div className="flex items-center gap-4">
-                <select className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white text-sm">
-                  <option>GPT-4o-2024-11-20</option>
+                <select className="bg-slate-800 border border-white/30 rounded-md px-3 py-2 text-white text-sm focus:bg-slate-700 focus:border-blue-400">
+                  <option className="bg-slate-800 text-white">GPT-4o-2024-11-20</option>
                 </select>
-                <select className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white text-sm">
-                  <option>Temperature: 0.5</option>
+                <select className="bg-slate-800 border border-white/30 rounded-md px-3 py-2 text-white text-sm focus:bg-slate-700 focus:border-blue-400">
+                  <option className="bg-slate-800 text-white">Temperature: 0.5</option>
                 </select>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white ml-auto">
                   <Play className="h-4 w-4 mr-2" />
@@ -149,6 +156,11 @@ export const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Pricing Section */}
+        <div className="mb-12">
+          <PricingSection />
+        </div>
 
         {/* Citation Management */}
         <Collapsible open={citationOpen} onOpenChange={setCitationOpen}>
