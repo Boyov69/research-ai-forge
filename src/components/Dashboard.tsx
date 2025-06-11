@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { PricingSection } from './dashboard/PricingSection';
 import { ResearchInterface } from './dashboard/ResearchInterface';
 import { CitationManager } from './dashboard/CitationManager';
 import { WorkspaceList } from './dashboard/WorkspaceList';
+import { MainNavigation } from './navigation/MainNavigation';
 
 export const Dashboard = () => {
   const [citationOpen, setCitationOpen] = useState(false);
@@ -42,40 +44,17 @@ export const Dashboard = () => {
   }];
   
   const handleQuerySubmit = () => {
-    // Handle query submission
     console.log('Query submitted');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      {/* Main Navigation */}
+      <MainNavigation />
+      
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Brain className="h-8 w-8 text-blue-400" />
-            <div>
-              <h1 className="text-2xl font-bold text-white">Scholar-AI</h1>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-blue-200">Dashboard</span>
-                <span className="text-sm text-blue-200">•</span>
-                <span className="text-sm text-blue-200">Pricing</span>
-                <span className="text-sm text-blue-200">•</span>
-                <span className="text-sm text-blue-200">Features</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-blue-400 hover:text-white">
-              Sign In
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              Get Started
-            </Button>
-          </div>
-        </div>
-
         {/* Hero Section */}
-        <div className="mb-12">
+        <div id="dashboard" className="mb-12">
           <Hero />
         </div>
 
@@ -100,18 +79,18 @@ export const Dashboard = () => {
         </div>
 
         {/* AI Research Interface */}
-        <div className="mb-6">
+        <div id="research" className="mb-6">
           <ResearchInterface subscription={null} onQuerySubmit={handleQuerySubmit} />
         </div>
 
         {/* Pricing Section */}
-        <div className="mb-12">
+        <div id="pricing" className="mb-12">
           <PricingSection />
         </div>
 
         {/* Citation Management */}
         <Collapsible open={citationOpen} onOpenChange={setCitationOpen}>
-          <Card className="backdrop-blur-lg bg-white/10 border-white/20 mb-6">
+          <Card id="citations" className="backdrop-blur-lg bg-white/10 border-white/20 mb-6">
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover:bg-white/5 transition-colors">
                 <div className="flex items-center justify-between">
@@ -137,7 +116,7 @@ export const Dashboard = () => {
 
         {/* Collaborative Workspaces */}
         <Collapsible open={workspaceOpen} onOpenChange={setWorkspaceOpen}>
-          <Card className="backdrop-blur-lg bg-white/10 border-white/20 mb-6">
+          <Card id="workspaces" className="backdrop-blur-lg bg-white/10 border-white/20 mb-6">
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover:bg-white/5 transition-colors">
                 <div className="flex items-center justify-between">
@@ -214,7 +193,9 @@ export const Dashboard = () => {
         </Collapsible>
 
         {/* Research Features */}
-        <ResearchFeatures />
+        <div id="features">
+          <ResearchFeatures />
+        </div>
       </div>
     </div>
   );
