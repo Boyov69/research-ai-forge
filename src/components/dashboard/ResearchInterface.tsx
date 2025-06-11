@@ -8,9 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Brain, Eye, Zap, Flame, Bird } from 'lucide-react';
+import { Search, Brain, Eye, Zap, Flame, Bird, History } from 'lucide-react';
+import { RecentQueries } from './RecentQueries';
 import type { Tables } from '@/integrations/supabase/types';
 
 interface ResearchInterfaceProps {
@@ -54,6 +56,8 @@ export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInter
   const [query, setQuery] = useState('');
   const [selectedAgents, setSelectedAgents] = useState<string[]>(['crow']);
   const [loading, setLoading] = useState(false);
+  const [queries, setQueries] = useState<Tables<'research_queries'>[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const { toast } = useToast();
 
   const handleAgentToggle = (agentId: string) => {
@@ -62,6 +66,47 @@ export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInter
         ? prev.filter(id => id !== agentId)
         : [...prev, agentId]
     );
+  };
+
+  const loadHistory = async () => {
+    if (historyLoading) return;
+    
+    setHistoryLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from('research_queries')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      setQueries(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error loading history",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const recallQuery = (queryData: Tables<'research_queries'>) => {
+    setTitle(queryData.title);
+    setQuery(queryData.query_text);
+    if (queryData.ai_agents_used) {
+      setSelectedAgents(queryData.ai_agents_used);
+    }
+    
+    toast({
+      title: "Query Recalled",
+      description: "Previous query has been loaded into the form.",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,6 +155,9 @@ export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInter
       setQuery('');
       setSelectedAgents(['crow']);
       onQuerySubmit();
+      
+      // Refresh history after submission
+      loadHistory();
     } catch (error: any) {
       toast({
         title: "Error submitting query",
@@ -137,110 +185,141 @@ export const ResearchInterface = ({ subscription, onQuerySubmit }: ResearchInter
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="title" className="text-white">Research Title</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter a descriptive title for your research"
-              className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="query" className="text-white">Research Question</Label>
-            <Textarea
-              id="query"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Describe your research question in detail..."
-              rows={4}
-              className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <Label className="text-white">Select AI Agents</Label>
-            <div className="grid grid-cols-2 gap-3">
-              {AI_AGENTS.map((agent) => {
-                const Icon = agent.icon;
-                return (
-                  <div
-                    key={agent.id}
-                    className={`p-3 rounded-lg border transition-all ${
-                      selectedAgents.includes(agent.id)
-                        ? 'bg-blue-500/20 border-blue-400'
-                        : 'bg-white/5 border-white/20 hover:border-white/40'
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <Checkbox
-                        checked={selectedAgents.includes(agent.id)}
-                        onCheckedChange={() => handleAgentToggle(agent.id)}
-                        className="border-white/40 mt-1"
-                      />
-                      <Icon className="h-4 w-4 text-blue-400 mt-1 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="text-white font-medium">{agent.name}</p>
-                        <p className="text-xs text-blue-200 mb-1">{agent.description}</p>
-                        <p className="text-xs text-blue-300/80 leading-relaxed">{agent.fullDescription}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Select defaultValue="gpt-4o-2024-11-20">
-              <SelectTrigger className="bg-white/10 border-white/20 text-white w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-600">
-                <SelectItem value="gpt-4o-2024-11-20" className="text-white hover:bg-slate-700">
-                  GPT-4o-2024-11-20
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select defaultValue="0.5">
-              <SelectTrigger className="bg-white/10 border-white/20 text-white w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-600">
-                <SelectItem value="0.5" className="text-white hover:bg-slate-700">
-                  Temperature: 0.5
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-blue-200">
-              Queries remaining: <span className="font-semibold text-white">{queriesRemaining}</span>
-            </div>
-            <Button
-              type="submit"
-              disabled={loading || queriesRemaining <= 0}
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+        <Tabs defaultValue="new-query" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-white/10 border-white/20">
+            <TabsTrigger value="new-query" className="data-[state=active]:bg-blue-500/30 data-[state=active]:text-white text-blue-200">
+              New Query
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="data-[state=active]:bg-blue-500/30 data-[state=active]:text-white text-blue-200"
+              onClick={loadHistory}
             >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Processing...
+              <History className="h-4 w-4 mr-2" />
+              History
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="new-query" className="mt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-white">Research Title</Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter a descriptive title for your research"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="query" className="text-white">Research Question</Label>
+                <Textarea
+                  id="query"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Describe your research question in detail..."
+                  rows={4}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-white">Select AI Agents</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {AI_AGENTS.map((agent) => {
+                    const Icon = agent.icon;
+                    return (
+                      <div
+                        key={agent.id}
+                        className={`p-3 rounded-lg border transition-all ${
+                          selectedAgents.includes(agent.id)
+                            ? 'bg-blue-500/20 border-blue-400'
+                            : 'bg-white/5 border-white/20 hover:border-white/40'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            checked={selectedAgents.includes(agent.id)}
+                            onCheckedChange={() => handleAgentToggle(agent.id)}
+                            className="border-white/40 mt-1"
+                          />
+                          <Icon className="h-4 w-4 text-blue-400 mt-1 flex-shrink-0" />
+                          <div className="flex-1">
+                            <p className="text-white font-medium">{agent.name}</p>
+                            <p className="text-xs text-blue-200 mb-1">{agent.description}</p>
+                            <p className="text-xs text-blue-300/80 leading-relaxed">{agent.fullDescription}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <Select defaultValue="gpt-4o-2024-11-20">
+                  <SelectTrigger className="bg-white/10 border-white/20 text-white w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectItem value="gpt-4o-2024-11-20" className="text-white hover:bg-slate-700">
+                      GPT-4o-2024-11-20
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Select defaultValue="0.5">
+                  <SelectTrigger className="bg-white/10 border-white/20 text-white w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectItem value="0.5" className="text-white hover:bg-slate-700">
+                      Temperature: 0.5
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-blue-200">
+                  Queries remaining: <span className="font-semibold text-white">{queriesRemaining}</span>
+                </div>
+                <Button
+                  type="submit"
+                  disabled={loading || queriesRemaining <= 0}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+                >
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-4 w-4" />
+                      Start Research
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="history" className="mt-6">
+            <div className="space-y-4">
+              {historyLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
+                  <span className="ml-2 text-blue-200">Loading history...</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4" />
-                  Start Research
-                </div>
+                <RecentQueries queries={queries} onRecall={recallQuery} />
               )}
-            </Button>
-          </div>
-        </form>
+            </div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
