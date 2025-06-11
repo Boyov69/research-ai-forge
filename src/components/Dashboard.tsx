@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { Hero } from './dashboard/Hero';
 import { PricingSection } from './dashboard/PricingSection';
 import { ResearchInterface } from './dashboard/ResearchInterface';
 import { CitationManager } from './dashboard/CitationManager';
+import { WorkspaceList } from './dashboard/WorkspaceList';
 
 export const Dashboard = () => {
   const [citationOpen, setCitationOpen] = useState(false);
@@ -155,9 +155,7 @@ export const Dashboard = () => {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CardContent>
-                <p className="text-blue-200">
-                  Share workspaces, collaborate on research projects, and work together with your team.
-                </p>
+                <WorkspaceList />
               </CardContent>
             </CollapsibleContent>
           </Card>
