@@ -6,13 +6,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Progress } from '@/components/ui/progress';
-import { Brain, Search, Users, Download, Quote, ChevronDown, ChevronUp, Play } from 'lucide-react';
+import { Brain, Search, Users, Download, Quote, ChevronDown, ChevronUp, Play, BarChart3, Settings } from 'lucide-react';
+import { ResearchAnalytics } from './dashboard/ResearchAnalytics';
+import { AccountSettings } from './dashboard/AccountSettings';
+import { ResearchFeatures } from './dashboard/ResearchFeatures';
 
 export const Dashboard = () => {
   const [query, setQuery] = useState('What are the latest developments in quantum computing for drug discovery?');
   const [researchProgress, setResearchProgress] = useState(73);
   const [citationOpen, setCitationOpen] = useState(false);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [analyticsOpen, setAnalyticsOpen] = useState(true);
+  const [accountOpen, setAccountOpen] = useState(true);
 
   const stats = [
     { title: 'Research Queries', value: '1,247', icon: Search, color: 'text-blue-400' },
@@ -175,7 +180,7 @@ export const Dashboard = () => {
 
         {/* Collaborative Workspaces */}
         <Collapsible open={workspaceOpen} onOpenChange={setWorkspaceOpen}>
-          <Card className="backdrop-blur-lg bg-white/10 border-white/20">
+          <Card className="backdrop-blur-lg bg-white/10 border-white/20 mb-6">
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover:bg-white/5 transition-colors">
                 <div className="flex items-center justify-between">
@@ -200,6 +205,61 @@ export const Dashboard = () => {
             </CollapsibleContent>
           </Card>
         </Collapsible>
+
+        {/* Research Analytics */}
+        <Collapsible open={analyticsOpen} onOpenChange={setAnalyticsOpen}>
+          <Card className="backdrop-blur-lg bg-white/10 border-white/20 mb-6">
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-white/5 transition-colors">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-orange-400" />
+                    Research Analytics
+                  </CardTitle>
+                  {analyticsOpen ? (
+                    <ChevronUp className="h-5 w-5 text-blue-400" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-blue-400" />
+                  )}
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent>
+                <ResearchAnalytics />
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
+
+        {/* Account & Settings */}
+        <Collapsible open={accountOpen} onOpenChange={setAccountOpen}>
+          <Card className="backdrop-blur-lg bg-white/10 border-white/20 mb-8">
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-white/5 transition-colors">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-gray-400" />
+                    Account & Settings
+                  </CardTitle>
+                  {accountOpen ? (
+                    <ChevronUp className="h-5 w-5 text-blue-400" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-blue-400" />
+                  )}
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent>
+                <AccountSettings />
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
+
+        {/* Research Features */}
+        <ResearchFeatures />
       </div>
     </div>
   );
